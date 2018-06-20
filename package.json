@@ -1,0 +1,30 @@
+{
+  "name": "nightlifeappbackend",
+  "version": "1.0.0",
+  "description": "Back end api for Nightlife Coordination App",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NJM8/nightlifeAppBackEnd.git"
+  },
+  "author": "Nate Mallison",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NJM8/nightlifeAppBackEnd/issues"
+  },
+  "homepage": "https://github.com/NJM8/nightlifeAppBackEnd#readme",
+  "dependencies": {
+    "bcrypt": "^2.0.1",
+    "body-parser": "^1.18.3",
+    "cors": "^2.8.4",
+    "dotenv": "^6.0.0",
+    "eslint": "^4.19.1",
+    "express": "^4.16.3",
+    "jsonwebtoken": "^8.3.0",
+    "mongoose": "^5.1.6",
+    "morgan": "^1.9.0"
+  }
+}
