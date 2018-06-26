@@ -84,7 +84,6 @@ router
       location: req.body.location,
       latitude: req.body.latitude,
       longitude: req.body.longitude,
-      sort_by: 'distance',
       limit: 20
     }
     yelp.search(searchTerms)
