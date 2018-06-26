@@ -2,8 +2,10 @@ var express = require('express')
 var router = express.Router()
 var db = require('../models')
 var jwt = require('jsonwebtoken')
-const Yelp = require('node-yelp-fusion')
-const yelp = new Yelp({ id: process.env.YELP_CLIENT_ID, secret: process.env.YELP_API_KEY })
+const dotenv = require('dotenv')
+dotenv.load()
+const Yelp = require('yelp-fusion')
+const yelp = Yelp.client(process.env.YELP_API_KEY)
 
 router
   .route('/login')
@@ -77,10 +79,20 @@ router
 router
   .route('/findBars')
   .post((req, res, next) => {
-    console.log('findbars')
-    console.log(req)
-    console.log(req.body)
-    res.status(200).json(req.body)
+    const searchTerms = {
+      term: 'bar',
+      location: req.body.location,
+      latitude: req.body.latitude,
+      longitude: req.body.longitude,
+      sort_by: 'distance',
+      limit: 20
+    }
+    yelp.search(searchTerms)
+    .then(result => {
+      res.json(result.jsonBody.businesses)
+    }).catch(error => {
+      return next(error)
+    })
   })
 
 module.exports = router
