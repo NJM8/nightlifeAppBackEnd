@@ -25,6 +25,7 @@
     "express": "^4.16.3",
     "jsonwebtoken": "^8.3.0",
     "mongoose": "^5.1.6",
-    "morgan": "^1.9.0"
+    "morgan": "^1.9.0",
+    "node-yelp-fusion": "^1.0.4"
   }
 }

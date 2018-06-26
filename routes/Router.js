@@ -2,6 +2,8 @@ var express = require('express')
 var router = express.Router()
 var db = require('../models')
 var jwt = require('jsonwebtoken')
+const Yelp = require('node-yelp-fusion')
+const yelp = new Yelp({ id: process.env.YELP_CLIENT_ID, secret: process.env.YELP_API_KEY })
 
 router
   .route('/login')
@@ -70,6 +72,15 @@ router
     } catch (error) {
       return res.status(401).send({ err: 'Invalid Token', message: 'Please log in again' })
     }
+  })
+
+router
+  .route('/findBars')
+  .post((req, res, next) => {
+    console.log('findbars')
+    console.log(req)
+    console.log(req.body)
+    res.status(200).json(req.body)
   })
 
 module.exports = router

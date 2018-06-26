@@ -1,7 +1,7 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
-const authRouter = require('./routes/AuthRouter')
+const Router = require('./routes/Router')
 const dotenv = require('dotenv')
 const cors = require('cors')
 const PORT = process.env.PORT || 8000
@@ -16,7 +16,7 @@ app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json())
 app.use(morgan('tiny'))
 
-app.use('/users', votingRouter)
+app.use('/', Router)
 
 // catch 404 and send to error handler
 app.use((req, res, next) => {
