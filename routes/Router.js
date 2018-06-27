@@ -90,6 +90,9 @@ router
     .then(result => {
       res.json(result.jsonBody.businesses)
     }).catch(error => {
+      if (error.statusCode === 400) {
+        return res.status(400).send(JSON.parse(error.response.body).error.description)
+      }
       return next(error)
     })
   })
