@@ -88,6 +88,7 @@ router
     }
     yelp.search(searchTerms)
     .then(result => {
+      result.jsonBody.businesses.forEach(business => business.peopleHere = [])
       res.json(result.jsonBody.businesses)
     }).catch(error => {
       if (error.statusCode === 400) {
