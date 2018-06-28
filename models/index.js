@@ -13,3 +13,4 @@ mongoose
   })
 
 module.exports.Users = require('./UsersModel')
+module.exports.Bars = require('./BarsModel')

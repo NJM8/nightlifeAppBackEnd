@@ -88,12 +88,62 @@ router
     }
     yelp.search(searchTerms)
     .then(result => {
-      result.jsonBody.businesses.forEach(business => business.peopleHere = [])
-      res.json(result.jsonBody.businesses)
+      let foundBars = result.jsonBody.businesses
+      let barIds = []
+      foundBars.forEach(bar => {
+        bar.peopleHere = []
+        barIds.push(bar.id)
+      })
+      db.Bars.find({
+        barId: {
+          $in: barIds
+        }
+      }).then(bars => {
+        bars.forEach(bar => {
+          foundBars.find(fBar => fBar.id === bar.barId).peopleHere = bar.peopleHere
+        })
+        res.json(foundBars)
+      })
     }).catch(error => {
       if (error.statusCode === 400) {
         return res.status(400).send(JSON.parse(error.response.body).error.description)
       }
+      return next(error)
+    })
+  })
+
+router
+  .route('/checkIn')
+  .post((req, res, next) => {
+    db.Bars.find({ barId: req.body.barId }).then((err, bar) => {
+      if (bar === undefined) {
+        db.Bars.create(req.body).then(bar => {
+          return res.status(200).send('check in saved')
+        })
+      } else {
+        bar.peopleHere.push(req.body.user)
+        bar.save()
+        res.status(200).send('check in saved')
+      }
+    }).catch(error => {
+      res.send(error)
+      return next(error)
+    })
+  })
+
+router
+  .route('/checkOut')
+  .post((req, res, next) => {
+    db.Bars.findOneAndUpdate({
+      barId: req.body.barId
+    }, {
+      $pull: {
+        peopleHere: req.body.peopleHere
+      }
+    }).then((err, doc) => {
+      res.send('removed')
+    }).catch(error => {
+      res.send(error)
       return next(error)
     })
   })
