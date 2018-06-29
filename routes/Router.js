@@ -17,7 +17,11 @@ router
         }
         if (isMatch) {
           const token = jwt.sign({ user_id: user.id }, process.env.SECRET_KEY, { expiresIn: 86400 })
-          res.status(200).json({ idToken: token, expiresIn: 86400, message: 'Logged In Successfully' })
+          res.status(200).json({ 
+            idToken: token, 
+            expiresIn: 86400, 
+            locationsSearched: user.locationsSearched,
+            message: 'Logged In Successfully' })
         } else {
           return res.status(401).send('Invalid Password')
         }
@@ -59,6 +63,7 @@ router
               idToken: token,
               expiresIn: 86400,
               username: user.username,
+              locationsSearched: user.locationsSearched,
               message: `Welcome back ${user.username}!`
             })
           }).catch(error => {
@@ -94,6 +99,27 @@ router
         bar.peopleHere = []
         barIds.push(bar.id)
       })
+      if (req.body.idToken) {
+        const locationSearched = `${foundBars[0].location.city}, ${foundBars[0].location.state}, ${foundBars[0].location.country}`
+        try {
+          jwt.verify(req.body.idToken, process.env.SECRET_KEY, function(error, decoded) {
+            if (decoded) {
+              db.Users.findByIdAndUpdate({
+                _id: decoded.user_id
+              }, {
+                $addToSet: {
+                  locationsSearched: locationSearched
+                }
+              }).then(user => {
+              }).catch(error => {
+                return next(error)
+              })
+            }
+          })
+        } catch(error) {
+          return next(error)
+        }
+      }
       db.Bars.find({
         barId: {
           $in: barIds
@@ -102,7 +128,7 @@ router
         bars.forEach(bar => {
           foundBars.find(fBar => fBar.id === bar.barId).peopleHere = bar.peopleHere
         })
-        res.json(foundBars)
+        return res.json(foundBars)
       })
     }).catch(error => {
       if (error.statusCode === 400) {
