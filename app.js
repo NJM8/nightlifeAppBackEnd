@@ -9,7 +9,7 @@ const app = express()
 dotenv.load()
 
 app.use(cors({
-  origin: app.get('env') === 'development' ? 'http://localhost:8080' : 'https://natethedev-votingappfrontend.herokuapp.com'
+  origin: app.get('env') === 'development' ? 'http://localhost:8080' : 'https://natethedev-nightlifeappfront.herokuapp.com/'
 }))
 
 app.use(bodyParser.urlencoded({extended: true}))
