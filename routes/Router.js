@@ -179,7 +179,15 @@ router
         peopleHere: req.body.peopleHere
       }
     }).then((err, doc) => {
-      res.send('removed')
+      db.Users.findOneAndUpdate({ 
+        username: req.body.peopleHere 
+      }, {
+        $set: {
+          currentLocation: ''
+        }
+      }).then(user => {
+        res.send('removed')
+      })
     }).catch(error => {
       res.send(error)
       return next(error)
