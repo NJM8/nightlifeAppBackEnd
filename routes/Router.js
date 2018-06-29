@@ -17,10 +17,11 @@ router
         }
         if (isMatch) {
           const token = jwt.sign({ user_id: user.id }, process.env.SECRET_KEY, { expiresIn: 86400 })
-          res.status(200).json({ 
+          return res.status(200).json({ 
             idToken: token, 
             expiresIn: 86400, 
             locationsSearched: user.locationsSearched,
+            currentLocation: user.currentLocation,
             message: 'Logged In Successfully' })
         } else {
           return res.status(401).send('Invalid Password')
@@ -64,6 +65,7 @@ router
               expiresIn: 86400,
               username: user.username,
               locationsSearched: user.locationsSearched,
+              currentLocation: user.currentLocation,
               message: `Welcome back ${user.username}!`
             })
           }).catch(error => {
@@ -89,7 +91,7 @@ router
       location: req.body.location,
       latitude: req.body.latitude,
       longitude: req.body.longitude,
-      limit: 20
+      limit: 40
     }
     yelp.search(searchTerms)
     .then(result => {
@@ -141,16 +143,26 @@ router
 router
   .route('/checkIn')
   .post((req, res, next) => {
-    db.Bars.find({ barId: req.body.barId }).then((err, bar) => {
-      if (bar === undefined) {
-        db.Bars.create(req.body).then(bar => {
-          return res.status(200).send('check in saved')
-        })
-      } else {
-        bar.peopleHere.push(req.body.user)
-        bar.save()
-        res.status(200).send('check in saved')
+    db.Bars.findOneAndUpdate({ 
+      barId: req.body.barId 
+    }, {
+      $addToSet: {
+        peopleHere: req.body.peopleHere
       }
+    }, {
+      upsert:true
+    }).then(bar => {
+      db.Users.findOneAndUpdate({ 
+        username: req.body.peopleHere 
+      }, {
+        $set: {
+          currentLocation: req.body.barId
+        }
+      }).then(user => {
+        return res.status(200).send('check in saved')
+      }).catch(error => {
+        console.log(error)
+      })
     }).catch(error => {
       res.send(error)
       return next(error)

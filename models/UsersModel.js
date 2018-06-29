@@ -16,7 +16,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  locationsSearched: []
+  locationsSearched: [],
+  currentLocation: {
+    type: String
+  }
 },
 {timestamps: true}
 )
