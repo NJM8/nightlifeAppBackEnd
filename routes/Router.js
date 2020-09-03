@@ -88,10 +88,15 @@ router
   .post((req, res, next) => {
     const searchTerms = {
       term: 'bar',
-      location: req.body.location,
-      latitude: req.body.latitude,
-      longitude: req.body.longitude,
       limit: 40
+    }
+    if (req.body.hasOwnProperty('location')) {
+      searchTerms.location = req.body.location
+    } else if (req.body.hasOwnProperty('latitude') && req.body.hasOwnProperty('longitude')) {
+      searchTerms.latitude = req.body.latitude
+      searchTerms.longitude = req.body.longitude
+    } else {
+      return res.status(400).send('missing search terms')
     }
     yelp.search(searchTerms)
     .then(result => {
